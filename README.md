@@ -1,20 +1,7 @@
+This is basic node.js mysql rest api project
 
-
-# NodeJsDemo
-
-
-
-## Usage
-
-
-
-## Developing
-
-
-
-### Tools
-
-Created with [Nodeclipse](https://github.com/Nodeclipse/nodeclipse-1)
- ([Eclipse Marketplace](http://marketplace.eclipse.org/content/nodeclipse), [site](http://www.nodeclipse.org))   
-
-Nodeclipse is free open-source project that grows with your contributions.
+For this project,
+DATABASE : (mysql)
+First create database "pixtr" in mysql.
+Create table "user1" in database.
+There are four fields " 'firstname','lastname','email','id'" in table where 'id' is a primary key.
