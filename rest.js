@@ -50,7 +50,7 @@ route.get('/users/:id', function(req, res) {
 	
 });
 
-route.put('/users',function(req,res){
+route.put('/users/insert',function(req,res){
     var Firstname = req.body.firstname;
     var Lastname = req.body.lastname;
     var Email = req.body.email;
@@ -89,7 +89,7 @@ route.put('/users',function(req,res){
        
 });
 
-route.post('/users',function(req,res){
+route.post('/users/update',function(req,res){
     
     var Firstname = req.body.firstname;
     var Lastname = req.body.lastname;
