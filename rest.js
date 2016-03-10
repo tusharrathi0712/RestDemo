@@ -9,12 +9,13 @@ var connection = mysql.createConnection({
 	database : 'pixtr',
 });
 
+var users = {
+        "status":1,
+        "user":""
+    };
 
 route.get('/users', function(req, res) {
-	var users = {
-		"status" : 1,
-		"user" : ""
-	};
+	
 	connection.query("select * from user1", function(err, rows, fields) {
 		if (rows.length !== 0) {
 			users.status = 200;
@@ -29,11 +30,8 @@ route.get('/users', function(req, res) {
 });
 
 route.get('/users/:id', function(req, res) {
-	var id=req.params.id;
-	var users = {
-		"status" : 1,
-		"user" : ""
-	};
+	
+	var id= parseInt(req.params.id);
 
 	connection.query("select * from user1 where id=?",[id], function(err, rows, fields) {
 		 if (rows.length !== 0) {
@@ -50,19 +48,16 @@ route.get('/users/:id', function(req, res) {
 	
 });
 
-route.put('/users/insert',function(req,res){
+route.post('/users',function(req,res){
     var Firstname = req.body.firstname;
     var Lastname = req.body.lastname;
     var Email = req.body.email;
     var id = req.body.id;
     
-    var users = {
-        "status":1,
-        "user":""
-    };
-    
     if(!!Firstname && !!Lastname && !!Email && !!id){
     	
+    	if(typeof Firstname === 'string' && typeof Lastname === 'string' && typeof Email === 'string' && typeof id === 'number'){
+    		
     	
         connection.query("INSERT INTO user1 VALUES(?,?,?,?)",[Firstname,Lastname,Email,id],function(err, rows, fields){
             if(!!err){  
@@ -78,7 +73,12 @@ route.put('/users/insert',function(req,res){
             res.json(users);	
        
         });
-        
+    	}else{
+    		res.status(400);
+        	users.status = 400;
+			users.user = "Incorrect Json Structure";
+			res.json(users);
+    	}
     }else{
     	res.status(422);
     	users.status = 422;
@@ -89,49 +89,70 @@ route.put('/users/insert',function(req,res){
        
 });
 
-route.post('/users/update',function(req,res){
+route.put('/users',function(req,res){
     
     var Firstname = req.body.firstname;
     var Lastname = req.body.lastname;
     var Email = req.body.email;
     var id = req.body.id;
     
-    var users = {
-        "status":1,
-        "user":""
-    };   
+    connection.query("select * from user1 where id=?",[id],function (err, rows, fields) {    	
+    	if (rows.length == 0) {
+    		res.status(404);
+        	users.status = 404;
+			users.user = "No data found...";
+			res.json(users);
+
+    	}
+    	else{
+    		if(!!Firstname && !!Lastname && !!Email && !!id){    	    	
+    	    	if(typeof Firstname === 'string' && typeof Lastname === 'string' && typeof Email === 'string' && typeof id === 'number'){   	    		
+    	    		connection.query("UPDATE user1 SET ?,?,? WHERE ?",[{firstname: Firstname},{lastname: Lastname},{email: Email},{id: id}],function(err, rows, fields){
+    	            if(err){
+    	            	res.status(500);
+    	            	users.status = 500;
+    	    			users.user = "Internal error occured...";
+    	    			res.json(users);
+    	            }else{            	
+    	    			users.status = 200;
+    	    			users.user = "User updated into database";
+    	    			res.json(users);
+    	            }
+    	            
+    	        });
+    	        
+    	    	}else{
+    	    		res.status(400);
+    	        	users.status = 400;
+    				users.user = "Incorrect Json Structure";
+    				res.json(users);
+    	    	}
+    	    }else{
+    	    	res.status(422);
+    	    	users.status = 422;
+    	    	users.user = "Missing data in json";
+    	        res.json(users);
+    	    }
+    	}
+    });
     
-    if(!!Firstname && !!Lastname && !!Email && !!id){
-        connection.query("UPDATE user1 SET firstname=?, lastname=?, email=? WHERE id=?",[id,Firstname,Lastname,Email,id],function(err, rows, fields){
-            if(!!err){
-            	res.status(404);
-            	users.status = 404;
-    			users.user = "No data found...";
-    			res.json(users);
-            }else{
-            	users.status = 200;
-    			users.user = "User updated into database";
-    			res.json(users);
-            }
-            
-        });
-    }else{
-    	res.status(422);
-    	users.status = 422;
-    	users.user = "Missing data in json";
-        res.json(users);
-    }
+    
 });
 
 route.delete('/users/:id',function(req,res){
-    var id = req.params.id;
-    var users = {
-        "status":1,
-        "user":""
-    };
+    var id = parseInt(req.params.id); 
    
+    connection.query("select * from user1 where id=?",[id],function (err, rows, fields) {    	
+    	if (rows.length == 0) {
+    		res.status(404);
+        	users.status = 404;
+			users.user = "No data found...";
+			res.json(users);
+
+    	}else{
+    
         connection.query("DELETE FROM user1 WHERE id=?",[id],function(err, rows, fields){
-            if(!!err){   
+            if(err){   
             	res.status(404);
             	users.status = 404;
     			users.user = "No user found...";
@@ -142,7 +163,8 @@ route.delete('/users/:id',function(req,res){
     			res.json(users);
             }           
         });
-    
+    	}
+    });
 });
 
 module.exports = route;
