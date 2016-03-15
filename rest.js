@@ -32,7 +32,7 @@ route.get('/users', function(req, res) {
 route.get('/users/:id', function(req, res) {
 	
 	var id= parseInt(req.params.id);
-
+	
 	connection.query("select * from user1 where id=?",[id], function(err, rows, fields) {
 		 if (rows.length !== 0) {
 			users.status = 200;
@@ -52,7 +52,7 @@ route.post('/users',function(req,res){
     var Firstname = req.body.firstname;
     var Lastname = req.body.lastname;
     var Email = req.body.email;
-    var id = req.body.id;
+    var id = parseInt(req.body.id);
     
     if(!!Firstname && !!Lastname && !!Email && !!id){
     	
@@ -61,6 +61,7 @@ route.post('/users',function(req,res){
     	
         connection.query("INSERT INTO user1 VALUES(?,?,?,?)",[Firstname,Lastname,Email,id],function(err, rows, fields){
             if(!!err){  
+            	//console.error('There was an error',err);
             	res.status(500);
             	users.status = 500;
     			users.user = "Internal Server Problem";
@@ -94,7 +95,7 @@ route.put('/users',function(req,res){
     var Firstname = req.body.firstname;
     var Lastname = req.body.lastname;
     var Email = req.body.email;
-    var id = req.body.id;
+    var id = parseInt(req.body.id);
     
     connection.query("select * from user1 where id=?",[id],function (err, rows, fields) {    	
     	if (rows.length == 0) {
